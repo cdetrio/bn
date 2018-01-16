@@ -13,7 +13,7 @@ license = "MIT OR Apache-2.0"
 name = "api"
 
 [dependencies]
-rand = "0.4"
+rand = { git = "https://github.com/rust-lang-nursery/rand", branch = "0.4" }
 rustc-serialize = { git = "https://github.com/chrysn-pull-requests/rustc-serialize", branch = "for-wasm" }
 byteorder = "1.0"
 
