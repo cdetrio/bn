@@ -17,6 +17,10 @@ rand = "0.4"
 rustc-serialize = { git = "https://github.com/chrysn-pull-requests/rustc-serialize", branch = "for-wasm" }
 byteorder = "1.0"
 
+[patch.crates-io]
+rand = "0.4"
+rustc-serialize = { git = "https://github.com/chrysn-pull-requests/rustc-serialize", branch = "for-wasm" }
+
 [dev-dependencies.bincode]
 version = "0.6"
 default-features = false
