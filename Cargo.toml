@@ -17,6 +17,9 @@ rand = { git = "https://github.com/rust-lang-nursery/rand", branch = "0.4" }
 rustc-serialize = { git = "https://github.com/chrysn-pull-requests/rustc-serialize", branch = "for-wasm" }
 byteorder = "1.0"
 
+[dependencies.rand]
+default-features = false
+
 [patch.crates-io]
 rand = { git = "https://github.com/rust-lang-nursery/rand", branch = "0.4" }
 rustc-serialize = { git = "https://github.com/chrysn-pull-requests/rustc-serialize", branch = "for-wasm" }
