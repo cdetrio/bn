@@ -13,12 +13,9 @@ license = "MIT OR Apache-2.0"
 name = "api"
 
 [dependencies]
-rand = { git = "https://github.com/rust-lang-nursery/rand", branch = "0.4" }
+rand = { git = "https://github.com/rust-lang-nursery/rand", branch = "0.4", default-features = false }
 rustc-serialize = { git = "https://github.com/chrysn-pull-requests/rustc-serialize", branch = "for-wasm" }
 byteorder = "1.0"
-
-[dependencies.rand]
-default-features = false
 
 [patch.crates-io]
 rand = { git = "https://github.com/rust-lang-nursery/rand", branch = "0.4" }
