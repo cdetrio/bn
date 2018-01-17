@@ -2,7 +2,6 @@ use std::ops::{Add,Sub,Neg,Mul};
 use fields::{FieldElement, Fq, Fq2, Fq12, Fr, const_fq, fq2_nonresidue};
 use arith::U256;
 use std::fmt;
-use rand::Rng;
 
 use rustc_serialize::{Encodable, Encoder, Decodable, Decoder};
 
@@ -19,7 +18,6 @@ pub trait GroupElement: Sized +
 {
     fn zero() -> Self;
     fn one() -> Self;
-    fn random<R: Rng>(rng: &mut R) -> Self;
     fn is_zero(&self) -> bool;
     fn double(&self) -> Self;
 }
@@ -285,10 +283,6 @@ impl<P: GroupParams> GroupElement for G<P> {
         P::one()
     }
 
-    fn random<R: Rng>(rng: &mut R) -> Self {
-        P::one() * Fr::random(rng)
-    }
-
     fn is_zero(&self) -> bool {
         self.z.is_zero()
     }
@@ -484,30 +478,6 @@ fn test_g1() {
 #[test]
 fn test_g2() {
     tests::group_trials::<G2>();
-}
-
-#[test]
-fn test_affine_jacobian_conversion() {
-    let rng = &mut ::rand::thread_rng();
-
-    assert!(G1::zero().to_affine().is_none());
-    assert!(G2::zero().to_affine().is_none());
-
-    for _ in 0..1000 {
-        let a = G1::one() * Fr::random(rng);
-        let b = a.to_affine().unwrap();
-        let c = b.to_jacobian();
-
-        assert_eq!(a, c);
-    }
-
-    for _ in 0..1000 {
-        let a = G2::one() * Fr::random(rng);
-        let b = a.to_affine().unwrap();
-        let c = b.to_jacobian();
-
-        assert_eq!(a, c);
-    }
 }
 
 #[inline]
@@ -893,33 +863,6 @@ fn predefined_pair() {
     let p = pairing(&g1, &g2);
 
     assert!(!p.is_zero());
-}
-
-#[test]
-fn test_binlinearity() {
-    use rand::{SeedableRng,StdRng};
-    let seed: [usize; 4] = [103245, 191922, 1293, 192103];
-    let mut rng = StdRng::from_seed(&seed);
-
-    for _ in 0..50 {
-        let p = G1::random(&mut rng);
-        let q = G2::random(&mut rng);
-        let s = Fr::random(&mut rng);
-        let sp = p * s;
-        let sq = q * s;
-
-        let a = pairing(&p, &q).pow(s);
-        let b = pairing(&sp, &q);
-        let c = pairing(&p, &sq);
-
-        assert_eq!(a, b);
-        assert_eq!(b, c);
-
-        let t = -Fr::one();
-
-        assert!(a != Fq12::one());
-        assert_eq!((a.pow(t)) * a, Fq12::one());
-    }
 }
 
 #[test]

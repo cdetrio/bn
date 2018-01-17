@@ -1,4 +1,3 @@
-use rand::Rng;
 use std::ops::{Add, Sub, Mul, Neg};
 use super::FieldElement;
 
@@ -111,10 +110,6 @@ macro_rules! field_impl {
             fn one() -> Self {
                 $name(U256($one))
             }
-            
-            fn random<R: Rng>(rng: &mut R) -> Self {
-                $name(U256::random(rng, &U256($modulus)))
-            }
 
             #[inline]
             fn is_zero(&self) -> bool {
@@ -202,23 +197,3 @@ pub fn const_fq(i: [u64; 4]) -> Fq {
     Fq(U256(i))
 }
 
-#[test]
-fn test_rsquared() {
-    let rng = &mut ::rand::thread_rng();
-
-    for _ in 0..1000 {
-        let a = Fr::random(rng);
-        let b: U256 = a.into();
-        let c = Fr::new(b).unwrap();
-
-        assert_eq!(a, c);
-    }
-
-    for _ in 0..1000 {
-        let a = Fq::random(rng);
-        let b: U256 = a.into();
-        let c = Fq::new(b).unwrap();
-
-        assert_eq!(a, c);
-    }
-}

@@ -1,6 +1,5 @@
 use fields::{FieldElement, Fq, Fq2, const_fq};
 use std::ops::{Add, Sub, Mul, Neg};
-use rand::Rng;
 
 fn frobenius_coeffs_c1(n: usize) -> Fq2 {
     match n % 6 {
@@ -95,14 +94,6 @@ impl FieldElement for Fq6 {
             c0: Fq2::one(),
             c1: Fq2::zero(),
             c2: Fq2::zero()
-        }
-    }
-    
-    fn random<R: Rng>(rng: &mut R) -> Self {
-        Fq6 {
-            c0: Fq2::random(rng),
-            c1: Fq2::random(rng),
-            c2: Fq2::random(rng)
         }
     }
 

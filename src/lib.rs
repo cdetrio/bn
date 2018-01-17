@@ -1,4 +1,3 @@
-extern crate rand;
 extern crate rustc_serialize;
 extern crate byteorder;
 
@@ -10,7 +9,6 @@ use fields::FieldElement;
 use groups::GroupElement;
 
 use std::ops::{Add, Sub, Mul, Neg};
-use rand::Rng;
 
 #[derive(Copy, Clone, Debug, PartialEq, Eq, RustcDecodable, RustcEncodable)]
 #[repr(C)]
@@ -19,7 +17,6 @@ pub struct Fr(fields::Fr);
 impl Fr {
     pub fn zero() -> Self { Fr(fields::Fr::zero()) }
     pub fn one() -> Self { Fr(fields::Fr::one()) }
-    pub fn random<R: Rng>(rng: &mut R) -> Self { Fr(fields::Fr::random(rng)) }
     pub fn pow(&self, exp: Fr) -> Self { Fr(self.0.pow(exp.0)) }
     pub fn from_str(s: &str) -> Option<Self> { fields::Fr::from_str(s).map(|e| Fr(e)) }
     pub fn inverse(&self) -> Option<Self> { self.0.inverse().map(|e| Fr(e)) }
@@ -77,7 +74,6 @@ pub struct Fq(fields::Fq);
 impl Fq {
     pub fn zero() -> Self { Fq(fields::Fq::zero()) }
     pub fn one() -> Self { Fq(fields::Fq::one()) }
-    pub fn random<R: Rng>(rng: &mut R) -> Self { Fq(fields::Fq::random(rng)) }
     pub fn pow(&self, exp: Fq) -> Self { Fq(self.0.pow(exp.0)) }
     pub fn from_str(s: &str) -> Option<Self> { fields::Fq::from_str(s).map(|e| Fq(e)) }
     pub fn inverse(&self) -> Option<Self> { self.0.inverse().map(|e| Fq(e)) }
@@ -162,7 +158,6 @@ pub trait Group:
 {
     fn zero() -> Self;
     fn one() -> Self;
-    fn random<R: Rng>(rng: &mut R) -> Self;
     fn is_zero(&self) -> bool;
     fn normalize(&mut self);
 }
@@ -204,7 +199,6 @@ impl G1 {
 impl Group for G1 {
     fn zero() -> Self { G1(groups::G1::zero()) }
     fn one() -> Self { G1(groups::G1::one()) }
-    fn random<R: Rng>(rng: &mut R) -> Self { G1(groups::G1::random(rng)) }
     fn is_zero(&self) -> bool { self.0.is_zero() }
     fn normalize(&mut self) {
         let new = match self.0.to_affine() {
@@ -313,7 +307,6 @@ impl G2 {
 impl Group for G2 {
     fn zero() -> Self { G2(groups::G2::zero()) }
     fn one() -> Self { G2(groups::G2::one()) }
-    fn random<R: Rng>(rng: &mut R) -> Self { G2(groups::G2::random(rng)) }
     fn is_zero(&self) -> bool { self.0.is_zero() }
     fn normalize(&mut self) {
         let new = match self.0.to_affine() {
