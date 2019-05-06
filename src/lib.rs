@@ -164,11 +164,14 @@ impl Fq {
     pub fn to_big_endian(&self, slice: &mut [u8]) -> Result<(), FieldError> {
         let mut a: arith::U256 = self.0.into();
         // convert from Montgomery representation
+        // this is redundant, already done in self.0.into()
+        /*
         a.mul(
             &fields::Fq::one().raw(),
             &fields::Fq::modulus(),
             self.0.inv(),
         );
+        */
         a.to_big_endian(slice)
             .map_err(|_| FieldError::InvalidSliceLength)
     }

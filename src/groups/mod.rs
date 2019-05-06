@@ -4,6 +4,11 @@ use arith::U256;
 use std::fmt;
 use rand::Rng;
 
+extern "C" {
+    fn debugStartTimer();
+    fn debugFinishTimer();
+}
+
 #[cfg(feature = "rustc-serialize")]
 use rustc_serialize::{Decodable, Decoder, Encodable, Encoder};
 
@@ -321,19 +326,27 @@ impl<P: GroupParams> Mul<Fr> for G<P> {
     type Output = G<P>;
 
     fn mul(self, other: Fr) -> G<P> {
+        // unsafe { debugStartTimer(); }
+
         let mut res = G::zero();
         let mut found_one = false;
 
         for i in U256::from(other).bits() {
             if found_one {
+                // unsafe { debugStartTimer(); }
                 res = res.double();
+                // unsafe { debugFinishTimer(); }
             }
 
             if i {
                 found_one = true;
+                //unsafe { debugStartTimer(); }
                 res = res + self;
+                //unsafe { debugFinishTimer(); }
             }
         }
+
+        // unsafe { debugFinishTimer(); }
 
         res
     }

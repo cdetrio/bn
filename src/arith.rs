@@ -1,6 +1,14 @@
 use std::cmp::Ordering;
 use rand::Rng;
 
+extern "C" {
+    fn mulmodmont256(aOffset: *const u128, bOffset: *const u128, modOffset: *const u128, invOffset: *const u128, resultOffset: *const u128);
+    fn submod256(aOffset: *const u128, bOffset: *const u128, modOffset: *const u128, resultOffset: *const u128);
+    fn addmod256(aOffset: *const u128, bOffset: *const u128, modOffset: *const u128, resultOffset: *const u128);
+    fn debugStartTimer();
+    fn debugFinishTimer();
+}
+
 #[cfg(feature = "rustc-serialize")]
 use rustc_serialize::{Decodable, Decoder, Encodable, Encoder};
 use byteorder::{BigEndian, ByteOrder};
@@ -340,29 +348,79 @@ impl U256 {
 
     /// Add `other` to `self` (mod `modulo`)
     pub fn add(&mut self, other: &U256, modulo: &U256) {
+        //unsafe { debugStartTimer(); }
+
+        let self_ptr = &self.0 as *const u128;
+        let other_ptr = &other.0 as *const u128;
+        let mod_ptr = &modulo.0 as *const u128;
+        unsafe {
+            addmod256(self_ptr, other_ptr, mod_ptr, self_ptr);
+        }
+
+        /*
         add_nocarry(&mut self.0, &other.0);
 
         if *self >= *modulo {
             sub_noborrow(&mut self.0, &modulo.0);
         }
+        */
+        //unsafe { debugFinishTimer(); }
     }
 
     /// Subtract `other` from `self` (mod `modulo`)
     pub fn sub(&mut self, other: &U256, modulo: &U256) {
+        //unsafe { debugStartTimer(); }
+
+        let self_ptr = &self.0 as *const u128;
+        let other_ptr = &other.0 as *const u128;
+        let mod_ptr = &modulo.0 as *const u128;
+        unsafe {
+            submod256(self_ptr, other_ptr, mod_ptr, self_ptr);
+        }
+
+        /*
+        // doesn't seem to make a difference in speed
+        unsafe {
+            //submod256(&self.0 as *const u128, &other.0 as *const u128, &modulo.0 as *const u128, &self.0 as *const u128);
+        }
+        */
+
+        /*
         if *self < *other {
             add_nocarry(&mut self.0, &modulo.0);
         }
 
         sub_noborrow(&mut self.0, &other.0);
+        */
+
+        //unsafe { debugFinishTimer(); }
     }
 
     /// Multiply `self` by `other` (mod `modulo`) via the Montgomery
     /// multiplication method.
     pub fn mul(&mut self, other: &U256, modulo: &U256, inv: u128) {
+        /*
         mul_reduce(&mut self.0, &other.0, &modulo.0, inv);
-
         if *self >= *modulo {
             sub_noborrow(&mut self.0, &modulo.0);
+        }
+        */
+
+        //let recipient_test_key_ptr = &recipient_test_key as *const u32;
+        let self_ptr = &self.0 as *const u128;
+        let other_ptr = &other.0 as *const u128;
+        let mod_ptr = &modulo.0 as *const u128;
+        //let inv_ref: &u128 = &inv;
+        //let inv_ptr = *inv_ref as *const u128;
+        //let mut inv_mut = inv;
+        //let inv_bytes = inv.to_ne_bytes();
+        //let inv_ptr = &inv_bytes as *const u8;
+        let inv_ptr = &inv as *const u128;
+        //let inv_ptr = inv as *const u128;
+
+        unsafe {
+            //mulmodmont256(self_ptr, other_ptr, mod_ptr, inv_ptr, result_ptr);
+            mulmodmont256(self_ptr, other_ptr, mod_ptr, inv_ptr, self_ptr);
         }
     }
 
